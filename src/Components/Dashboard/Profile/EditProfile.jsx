@@ -1,42 +1,97 @@
 /* eslint-disable no-unused-vars */
 import { Button, ConfigProvider, Form, Input, Typography, Upload } from "antd";
-import profileImage from "/images/profileImage.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditOutlined } from "@ant-design/icons";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoCameraOutline, IoChevronBackOutline } from "react-icons/io5";
+import Cookies from "js-cookie";
+import { decodedToken } from "../../../utils/jwt";
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+} from "../../../redux/features/profile/profileApi";
+import Loading from "../../UI/Loading";
+import { getImageUrl } from "../../../helpers/config/envConfig";
+import { toast } from "sonner";
 
 const EditProfile = () => {
-  const profileData = {
-    fullname: "James Mitchell",
-    email: "emily@gmail.com",
-    address: "Vancouver, BC VG1Z4, Canada",
-    contactNumber: "+99-01846875456",
-  };
+  const { data, isFetching } = useGetProfileQuery();
+  const [updateProfile] = useUpdateProfileMutation();
+  const imageApiUrl = getImageUrl();
+  const [form] = Form.useForm();
 
+  const profileData = data?.data;
+  const profileImage = imageApiUrl + profileData?.image;
   const [imageUrl, setImageUrl] = useState(profileImage);
+
+  useEffect(() => {
+    if (profileData?.image) {
+      setImageUrl(imageApiUrl + profileData.image); // Update image URL when profile data changes
+    }
+  }, [profileData, imageApiUrl]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      fullName: profileData?.fullName,
+      phone: profileData?.phone,
+    });
+  }, [form, profileData]);
 
   const handleImageUpload = (info) => {
     if (info.file.status === "removed") {
-      setImageUrl(profileImage); // Reset to null or fallback image
+      setImageUrl(profileImage);
+      form.setFieldsValue({ image: undefined });
     } else {
-      const file = info.file.originFileObj || info.file; // Handle the file object safely
+      const file = info.file.originFileObj;
       if (file) {
-        setImageUrl(URL.createObjectURL(file)); // Set the preview URL of the selected image
-      } else {
-        console.error("No file selected or file object missing");
+        const imageUrl = URL.createObjectURL(file);
+        setImageUrl(imageUrl);
+        form.setFieldsValue({ image: file });
       }
     }
   };
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    console.log(imageUrl);
+  const onFinish = async (values) => {
+    console.log(values);
+    const formData = new FormData();
+    const toastId = toast.loading("Profile updating...");
+
+    if (values?.image) {
+      formData.append("image", values?.image);
+    }
+    if (values?.fullName) {
+      formData.append("fullName", values?.fullName);
+    }
+    if (values?.phone) {
+      formData.append("phone", values?.phone);
+    }
+
+    try {
+      const res = await updateProfile(formData).unwrap();
+
+      if (res.success) {
+        toast.success("Profile updated successfully", {
+          id: toastId,
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.data?.message || "An error occurred", {
+        id: toastId,
+        duration: 2000,
+      });
+    }
   };
+
+  if (isFetching) {
+    return <Loading />;
+  }
 
   return (
     <div className=" lg:w-[70%] mx-auto">
       <Form
+        form={form}
         onFinish={onFinish}
         layout="vertical"
         className="bg-transparent py-10 text-base-color w-full "
@@ -75,20 +130,19 @@ const EditProfile = () => {
               </Upload>
             </Form.Item>
           </div>
-          <p className="text-5xl font-semibold -mt-5">James Mitchell</p>
+          <p className="text-5xl font-semibold -mt-5">
+            {profileData?.fullName}
+          </p>
         </div>
 
         <div className=" text-white mt-5">
           <Typography.Title level={5} style={{ color: "#222222" }}>
             Email
           </Typography.Title>
-          <Form.Item
-            initialValue={profileData.email}
-            name="email"
-            className="text-white "
-          >
+          <Form.Item className="text-white ">
             <Input
-              suffix={<MdOutlineEdit />}
+              value={profileData?.email}
+              disabled
               type="email"
               placeholder="Enter your email"
               className="py-2 px-3 text-xl border !border-input-color !text-base-color !bg-transparent"
@@ -97,11 +151,7 @@ const EditProfile = () => {
           <Typography.Title level={5} style={{ color: "#222222" }}>
             User Name
           </Typography.Title>
-          <Form.Item
-            initialValue={profileData.fullname}
-            name="userName"
-            className="text-white"
-          >
+          <Form.Item name="fullName" className="text-white">
             <Input
               suffix={<MdOutlineEdit />}
               placeholder="Enter your Name"
@@ -111,11 +161,7 @@ const EditProfile = () => {
           <Typography.Title level={5} style={{ color: "#222222" }}>
             Contact number
           </Typography.Title>
-          <Form.Item
-            initialValue={profileData.contactNumber}
-            name="contactNumber"
-            className="text-white"
-          >
+          <Form.Item name="phone" className="text-white">
             <Input
               suffix={<MdOutlineEdit />}
               placeholder="Enter your Contact number"

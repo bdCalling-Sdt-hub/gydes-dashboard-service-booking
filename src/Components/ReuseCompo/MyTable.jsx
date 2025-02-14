@@ -12,6 +12,7 @@ const MyTable = ({ columns, data, setPage }) => {
               showSizeChanger: false, // Enables page size selection
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`, // Shows total items
+              total: data.length,
             }
           : false
       }

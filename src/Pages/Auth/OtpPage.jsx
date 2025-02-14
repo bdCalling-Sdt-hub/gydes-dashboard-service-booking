@@ -4,15 +4,90 @@ import { Link, useNavigate } from "react-router-dom";
 import OTPInput from "react-otp-input";
 import Container from "../../Components/UI/Container";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import {
+  useForgetOtpVerifyMutation,
+  useResendForgetOTPMutation,
+} from "../../redux/features/auth/authApi";
+import { toast } from "sonner";
+import {
+  getFromLocalStorage,
+  removeFromLocalStorage,
+  setToLocalStorage,
+} from "../../utils/localStorage";
+import Cookies from "js-cookie";
 
 const OtpPage = () => {
-  const [otp, setOtp] = useState("");
-
   const navigate = useNavigate();
+  const [otp, setOtp] = useState("");
+  const [forgetPasswordOTPResend] = useResendForgetOTPMutation();
+  const [ForgetVerifiedEmail] = useForgetOtpVerifyMutation();
+  const token = Cookies.get("gydes_accessToken");
+  const forgetPasswordToken = getFromLocalStorage("gydes_forgetPasswordToken");
 
-  const handleOTPSubmit = () => {
-    console.log("OTP:", otp);
-    navigate("/update-password");
+  if (token) {
+    return (window.location.href = "/");
+  }
+
+  if (!forgetPasswordToken) {
+    return (window.location.href = "/forgot-password");
+  }
+
+  const handleOTPSubmit = async () => {
+    const toastId = toast.loading("Verifying...");
+
+    if (otp.length < 6) {
+      toast.error("The OTP must be 6 digits long", {
+        id: toastId,
+        duration: 2000,
+      });
+    } else {
+      const data = {
+        otp: otp,
+      };
+
+      try {
+        const res = await ForgetVerifiedEmail(data).unwrap();
+        console.log(res);
+        if (res.success) {
+          toast.success("Email verified successfully", {
+            id: toastId,
+            duration: 2000,
+          });
+          setToLocalStorage(
+            "gydes_forgetOtpMatchToken",
+            res?.data?.forgetOtpMatchToken
+          );
+          removeFromLocalStorage("gydes_forgetPasswordToken");
+          navigate("/update-password");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(error?.data?.message || "An error occurred during login", {
+          id: toastId,
+          duration: 3000,
+        });
+      }
+    }
+  };
+
+  const handleResendOTP = async () => {
+    const toastId = toast.loading("Resending OTP...");
+
+    try {
+      const res = await forgetPasswordOTPResend().unwrap();
+
+      if (res.success) {
+        toast.success("OTP resent successfully!", {
+          id: toastId,
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to resend OTP", {
+        id: toastId,
+        duration: 2000,
+      });
+    }
   };
 
   return (
@@ -56,12 +131,12 @@ const OtpPage = () => {
             </Form>
             <div className="flex justify-center gap-2 py-1">
               <p>Didn’t receive code?</p>
-              <Link
-                href="/otp-verification"
-                className="!text-secondary-color !underline font-semibold"
+              <p
+                onClick={handleResendOTP}
+                className="!text-secondary-color !underline font-semibold cursor-pointer"
               >
                 Click to resend
-              </Link>
+              </p>
             </div>
 
             <div className="text-[#667085] w-fit mx-auto mt-10">

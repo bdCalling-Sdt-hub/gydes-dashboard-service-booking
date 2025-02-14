@@ -25,13 +25,17 @@ import Earning from "../Pages/Admin/Earning";
 import Reports from "../Pages/Admin/Reports";
 import NotFoundPage from "../Components/NotFound/NotFound";
 import Events from "../Pages/Admin/Events";
+import Cookies from "js-cookie";
+import { decodedToken } from "../utils/jwt";
 
 function AuthRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("home_care_user"));
-    if (user && user.role) {
+    const token = Cookies.get("gydes_accessToken");
+    const user = decodedToken(token);
+    console.log("User:", user);
+    if (user || user?.role === "admin") {
       navigate(`/${user.role}/dashboard`, { replace: true });
     } else {
       navigate("/signin", { replace: true });

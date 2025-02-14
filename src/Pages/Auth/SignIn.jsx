@@ -2,17 +2,67 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Checkbox, Form, Input, Typography } from "antd";
 
 import Container from "../../Components/UI/Container";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import Cookies from "js-cookie";
+import {
+  setAccessToken,
+  setUserInfo,
+} from "../../redux/features/auth/authSlice";
+import { useLoginMutation } from "../../redux/features/auth/authApi";
 
 const SignIn = () => {
-  const navigate = useNavigate(); // useNavigate hook for navigation
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [userLogin] = useLoginMutation();
+  const token = Cookies.get("gydes_accessToken");
 
-  const onFinish = (values) => {
-    localStorage.removeItem("home_care_user");
-    localStorage.setItem(
-      "home_care_user",
-      JSON.stringify({ ...values, role: "admin" })
-    );
-    navigate("/"); // Correct use of navigate function
+  if (token) {
+    return (window.location.href = "/");
+  }
+
+  const onFinish = async (values) => {
+    console.log(values);
+    const toastId = toast.loading(" Logging in...");
+
+    // navigate.push("/");
+
+    const loginData = {
+      email: values.email,
+      password: values.password,
+    };
+
+    console.log("Login Data:", loginData);
+
+    try {
+      const res = await userLogin(loginData).unwrap();
+      console.log(res);
+      //* Dispatch the accessToken and userInfo to Redux store
+      dispatch(setAccessToken(res?.data?.accessToken));
+      dispatch(setUserInfo(res?.data?.attributes));
+      Cookies.set("gydes_accessToken", res?.data?.accessToken, {
+        path: "/",
+        remote: true,
+        expires: 365,
+        secure: true,
+      });
+      toast.success(res.message, {
+        id: toastId,
+        duration: 2000,
+      });
+
+      navigate("/");
+    } catch (error) {
+      toast.error(
+        error?.data?.message ||
+          error?.error ||
+          "An error occurred during Login",
+        {
+          id: toastId,
+          duration: 2000,
+        }
+      );
+    }
   };
   return (
     <div className="text-base-color">

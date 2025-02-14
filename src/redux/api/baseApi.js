@@ -10,20 +10,24 @@ const baseQuery = fetchBaseQuery({
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = Cookies.get("gydes_accessToken");
-    const signUpToken = getFromLocalStorage("gydes_createUserToken");
+    const forgetPasswordToken = getFromLocalStorage(
+      "gydes_forgetPasswordToken"
+    );
+    const forgetOtpMatchToken = getFromLocalStorage(
+      "gydes_forgetOtpMatchToken"
+    );
 
-    const changePassToken = getFromLocalStorage("gydes_otp_match_token");
-
+    // Only set authorization header if token is not already set
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("token", `${token}`);
     }
 
-    if (signUpToken) {
-      headers.set("SignUpToken", `signUpToken ${signUpToken}`);
+    if (forgetPasswordToken) {
+      headers.set("token", JSON.parse(forgetPasswordToken));
     }
 
-    if (changePassToken) {
-      headers.set("Forget-password", `Forget-password ${changePassToken}`);
+    if (forgetOtpMatchToken) {
+      headers.set("token", forgetOtpMatchToken);
     }
 
     return headers;

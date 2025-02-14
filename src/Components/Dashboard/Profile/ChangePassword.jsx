@@ -1,10 +1,43 @@
 import { Button, Form, Input, Typography } from "antd";
+import { toast } from "sonner";
+import { useChangePasswordMutation } from "../../../redux/features/auth/authApi";
+import { useDispatch } from "react-redux";
+import { clearAuth } from "../../../redux/features/auth/authSlice";
+import Cookies from "js-cookie";
 
 const ChangePassword = () => {
-  const onFinish = (values) => {
+  const [updatePassword] = useChangePasswordMutation();
+  const dispatch = useDispatch();
+  const onFinish = async (values) => {
+    const toastId = toast.loading("Updating Password...");
+
+    const data = {
+      oldPassword: values.oldPassword,
+      newPassword: values.newPassword,
+    };
+    try {
+      const res = await updatePassword(data).unwrap();
+
+      dispatch(clearAuth());
+      Cookies.remove("gydes_accessToken");
+
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+          duration: 2000,
+        });
+      }
+
+      window.location.href = "/signin";
+      window.location.reload();
+    } catch (error) {
+      toast.error(error?.data?.message || "An error occurred", {
+        id: toastId,
+        duration: 2000,
+      });
+    }
+
     console.log("Success:", values);
-    localStorage.removeItem("home_care_user");
-    window.location.reload();
   };
   return (
     <div className="lg:w-[70%] my-20">
@@ -23,7 +56,7 @@ const ChangePassword = () => {
               message: "Please enter your current password!",
             },
           ]}
-          name="currentPassword"
+          name="oldPassword"
           className="text-white "
         >
           <Input.Password

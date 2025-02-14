@@ -3,12 +3,64 @@ import { Button, Form, Input, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import Container from "../../Components/UI/Container";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { toast } from "sonner";
+import { useResetPasswordMutation } from "../../redux/features/auth/authApi";
+import {
+  getFromLocalStorage,
+  removeFromLocalStorage,
+} from "../../utils/localStorage";
+import Cookies from "js-cookie";
 
 const UpdatePassword = () => {
   const navigate = useNavigate();
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    navigate("/signin");
+  const [resetPassword] = useResetPasswordMutation();
+  const token = Cookies.get("gydes_accessToken");
+  const forgetOtpMatchToken = getFromLocalStorage("gydes_forgetOtpMatchToken");
+
+  if (token) {
+    return (window.location.href = "/");
+  }
+
+  if (!forgetOtpMatchToken) {
+    return (window.location.href = "/forgot-password");
+  }
+
+  const handleSubmit = async (values) => {
+    const toastId = toast.loading("Updateing Password...");
+
+    console.log(values);
+
+    //* validate password
+    const newPassword = values.password;
+    const confirmPassword = values.confirmPassword;
+
+    const data = {
+      newPassword,
+      confirmPassword,
+    };
+
+    //* Logic Part
+    try {
+      const res = await resetPassword(data).unwrap();
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+          duration: 2000,
+        });
+        removeFromLocalStorage("gydes_forgetOtpMatchToken");
+        navigate("/signin");
+      }
+    } catch (error) {
+      toast.error(
+        error?.data?.message ||
+          error?.message ||
+          "An error occurred during Login",
+        {
+          id: toastId,
+          duration: 2000,
+        }
+      );
+    }
   };
 
   return (
@@ -32,7 +84,7 @@ const UpdatePassword = () => {
             <Form
               layout="vertical"
               className="bg-transparent w-full"
-              onFinish={onFinish}
+              onFinish={handleSubmit}
             >
               <Typography.Title
                 level={4}

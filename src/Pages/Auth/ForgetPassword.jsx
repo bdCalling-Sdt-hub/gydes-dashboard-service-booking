@@ -3,14 +3,50 @@ import { Button, Form, Input, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import Container from "../../Components/UI/Container";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { useForgetPasswordMutation } from "../../redux/features/auth/authApi";
+import { toast } from "sonner";
+import { setToLocalStorage } from "../../utils/localStorage";
+import Cookies from "js-cookie";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const [forgetPassword] = useForgetPasswordMutation();
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    navigate("/verify-otp");
+  const token = Cookies.get("gydes_accessToken");
+
+  if (token) {
+    return (window.location.href = "/");
+  }
+
+  const onFinish = async (values) => {
+    const toastId = toast.loading("Requesting...");
+
+    try {
+      const res = await forgetPassword(values).unwrap();
+      console.log(res);
+      toast.success(res.message, {
+        id: toastId,
+        duration: 2000,
+      });
+
+      setToLocalStorage(
+        "gydes_forgetPasswordToken",
+        JSON.stringify(res?.data?.forgetToken)
+      );
+
+      navigate("/verify-otp");
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error?.data?.message || "An error occurred during Forgot Password",
+        {
+          id: toastId,
+          duration: 2000,
+        }
+      );
+    }
   };
+
   return (
     <div className="text-base-color">
       <Container>

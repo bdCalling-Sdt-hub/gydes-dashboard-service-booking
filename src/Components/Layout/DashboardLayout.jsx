@@ -25,31 +25,23 @@ import Sider from "antd/es/layout/Sider";
 import { Content, Header } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { AllImages } from "../../../public/images/AllImages";
-import TopLoadingBar from "react-top-loading-bar";
+import Cookies from "js-cookie";
+import { decodedToken } from "../../utils/jwt";
+import { useDispatch } from "react-redux";
+import { clearAuth } from "../../redux/features/auth/authSlice";
 
 const DashboardLayout = () => {
-  const userRole = JSON.parse(localStorage.getItem("home_care_user")); // Parse the stored JSON string
-
+  const dispatch = useDispatch();
+  const token = Cookies.get("gydes_accessToken");
+  const user = decodedToken(token); // Parse the stored JSON string
   const location = useLocation();
   const pathSegment = location.pathname.split("/").pop();
-
   const currentPath = location.pathname;
 
   // Logic to set active keys
   const activeKeys = (() => {
-    if (
-      currentPath.includes("/profile") ||
-      currentPath.includes("/edit-profile")
-    ) {
+    if (currentPath.includes("/profile")) {
       return ["profile"];
-    }
-    if (
-      currentPath.includes("/settings/change-password") ||
-      currentPath.includes("/settings/forgot-password") ||
-      currentPath.includes("/settings/update-password") ||
-      currentPath.includes("/settings/otp-page")
-    ) {
-      return ["change-password"];
     }
     if (currentPath.includes("/privacy-policy")) {
       return ["privacy-policy"];
@@ -86,7 +78,12 @@ const DashboardLayout = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
+  const handleLogout = () => {
+    dispatch(clearAuth());
+    Cookies.remove("gydes_accessToken");
+    window.location.href = "/signin";
+    window.location.reload();
+  };
   const adminMenuItems = [
     {
       key: "dashboard",
@@ -176,26 +173,26 @@ const DashboardLayout = () => {
       label: <span className="text-primary-color">Setting</span>,
       icon: <img src={setting} alt="setting" width={16} height={16} />,
       children: [
-        {
-          key: "profile",
-          icon: (
-            <img
-              src={profile}
-              alt="profile"
-              width={16}
-              height={16}
-              style={{
-                filter: location.pathname.includes("profile")
-                  ? "invert(38%) sepia(85%) saturate(5500%) hue-rotate(190deg) brightness(90%) contrast(90%)"
-                  : undefined,
-              }}
-            />
-          ),
-          label: <NavLink to="profile">Profile</NavLink>,
-        },
         // Include Privacy Policy and Terms of Service only for admin users
-        ...(userRole?.role === "admin"
+        ...(user?.role === "admin"
           ? [
+              {
+                key: "profile",
+                icon: (
+                  <img
+                    src={profile}
+                    alt="profile"
+                    width={16}
+                    height={16}
+                    style={{
+                      filter: location.pathname.includes("profile")
+                        ? "invert(38%) sepia(85%) saturate(5500%) hue-rotate(190deg) brightness(90%) contrast(90%)"
+                        : undefined,
+                    }}
+                  />
+                ),
+                label: <NavLink to="profile">Profile</NavLink>,
+              },
               {
                 key: "privacy-policy",
                 icon: (
@@ -249,47 +246,18 @@ const DashboardLayout = () => {
         />
       ),
       label: (
-        <div onClick={() => localStorage.removeItem("home_care_user")}>
-          <NavLink to="/signin">Logout</NavLink>
+        <div onClick={handleLogout}>
+          <span>Logout</span>
         </div>
       ),
     },
   ];
 
   // Select the appropriate menu items based on user role
-  const menuItems = userRole?.role === "admin" ? adminMenuItems : "";
-
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    // Start the progress bar when the route changes
-    setProgress(0);
-
-    // After a delay, finish loading the progress bar (you can adjust this delay)
-    const timeout = setTimeout(() => {
-      setProgress(100);
-    }, 100); // Adjust delay as necessary
-
-    // Reset progress once loading is finished
-    const resetTimeout = setTimeout(() => {
-      setProgress(0);
-    }, 200); // Reset after 1.5 seconds to ensure it reaches 100%
-
-    // Cleanup timeouts on component unmount
-    return () => {
-      clearTimeout(timeout);
-      clearTimeout(resetTimeout);
-    };
-  }, [location]);
+  const menuItems = user?.role === "admin" ? adminMenuItems : "";
 
   return (
     <div className="h-screen bg-white ">
-      <TopLoadingBar
-        color="#0861C5" // Customize the color
-        progress={progress} // Dynamic progress based on state
-        height={5} // Customize height of the bar
-        onLoaderFinished={() => setProgress(0)} // Reset after loading
-      />
       <ScrollRestoration />
       <Layout className="!relative !bg-white">
         <Sider
