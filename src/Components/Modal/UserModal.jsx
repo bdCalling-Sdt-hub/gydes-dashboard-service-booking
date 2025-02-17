@@ -1,8 +1,34 @@
 /* eslint-disable react/prop-types */
 import { Button, Modal, Rate } from "antd";
-import { AllImages } from "../../../public/images/AllImages";
+import { getImageUrl } from "../../helpers/config/envConfig";
+import { formatJoinDate } from "../../utils/dateFormet";
+import { toast } from "sonner";
+import { useVerifedUserMutation } from "../../redux/features/users/usersApi";
+import { Link } from "react-router-dom";
 
 const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
+  const [verifedUser] = useVerifedUserMutation();
+  const imageApiUrl = getImageUrl();
+
+  const profileImage = imageApiUrl + currentRecord?.image;
+
+  const handleVerified = async (id) => {
+    const toastId = toast.loading("User verified...");
+
+    try {
+      const res = await verifedUser({ id });
+      console.log(res);
+      toast.success(res?.data?.message, {
+        id: toastId,
+        duration: 2000,
+      });
+      handleCancel();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to verify user", { id: toastId, duration: 2000 });
+    }
+  };
+
   return (
     <Modal
       open={isUserViewModalVisible}
@@ -17,60 +43,56 @@ const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
           <div className="flex justify-center items-center p-4">
             {/* Avatar */}
             <img
-              src={AllImages.user}
-              alt={currentRecord?.Name}
-              className="w-12 h-12 sm:w-16  sm:h-16 rounded-lg mr-4"
+              src={profileImage}
+              alt={currentRecord?.fullName}
+              className="w-12 h-12 sm:w-16  sm:h-16 rounded-lg mr-4 border border-secondary-color"
             />
           </div>
           <div className="text-lg sm:text-xl lg:text-2xl font-semibold">
-            {currentRecord?.Name}
+            {currentRecord?.fullName}
           </div>
           <div className="flex items-center justify-center gap-2">
             <Rate
               allowHalf
-              defaultValue={currentRecord?.Rating}
+              defaultValue={currentRecord?.rating}
               style={{ color: "#FF8510", fontSize: 16 }}
               disabled
             />
-            <span>{currentRecord?.Rating} Rating</span>
+            <span>{currentRecord?.rating} Rating</span>
           </div>
           <div className="mt-2">
             <div className="text-lg text-center font-medium ">
               <div className="flex justify-center items-center gap-2 mb-2">
                 <div className="">Role: </div>
                 <div className="text-secondary-color">
-                  {currentRecord?.Role}
+                  {currentRecord?.role}
                 </div>
               </div>
 
               <div className="flex justify-center items-center  gap-2 mb-2">
                 <div className="">Plan:</div>
-                <div>{currentRecord?.Plan}</div>
+                <div>{currentRecord?.isSubcription ? "Premium" : "Free"}</div>
               </div>
 
               <div className="flex justify-center items-center  gap-2 mb-2">
                 <div className="">Location:</div>
-                <div>{currentRecord?.Location}</div>
+                <div>{currentRecord?.address}</div>
               </div>
 
               <div className="flex justify-center items-center  gap-2 mb-2">
                 <div className="">Joined:</div>
                 <div className="text-justify pt-0 ">
-                  {currentRecord?.Joined}
+                  {formatJoinDate(currentRecord?.createdAt)}
                 </div>
               </div>
 
               <div className="flex justify-center items-center  gap-2 mb-2">
                 <div className="">Status:</div>
                 <div className="text-justify pt-0 ">
-                  {currentRecord?.Status === "Unverified" ? (
-                    <span className="text-[#ff766a]">
-                      {currentRecord?.Status}
-                    </span>
+                  {!currentRecord?.adminVerified ? (
+                    <span className="text-[#ff766a]">Unverified</span>
                   ) : (
-                    <span className="text-secondary-color">
-                      {currentRecord?.Status}
-                    </span>
+                    <span className="text-secondary-color">Verified</span>
                   )}
                 </div>
               </div>
@@ -78,14 +100,28 @@ const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
           </div>
           <div className="mt-5">
             <div className="flex flex-col md:flex-row justify-center items-center gap-3">
-              {currentRecord?.Status === "Unverified" && (
-                <Button className="!bg-secondary-color !text-primary-color text-lg font-medium py-5">
+              {!currentRecord?.adminVerified && (
+                <Button
+                  onClick={() => handleVerified(currentRecord?._id)}
+                  className="!bg-secondary-color !text-primary-color text-lg font-medium py-5"
+                >
                   Verify Profile
                 </Button>
               )}
-              <Button className="!bg-[#ff8510] !text-primary-color text-lg font-medium py-5">
-                View Documents
-              </Button>
+              {currentRecord?.document ? (
+                <Link
+                  target="_blank"
+                  to={`${imageApiUrl + currentRecord?.document}`}
+                >
+                  <Button className="!bg-[#ff8510] !text-primary-color text-lg font-medium py-5">
+                    View Documents
+                  </Button>
+                </Link>
+              ) : (
+                <div className="!bg-primary-color !text-[#ff8510] !border-none cursor-default text-lg font-medium py-5">
+                  Documents Not Found
+                </div>
+              )}
             </div>
           </div>
         </div>

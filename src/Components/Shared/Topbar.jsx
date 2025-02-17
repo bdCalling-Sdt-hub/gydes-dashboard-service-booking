@@ -5,6 +5,8 @@ import { Dropdown, Flex, Typography } from "antd";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { AllImages } from "../../../public/images/AllImages";
+import { useGetProfileQuery } from "../../redux/features/profile/profileApi";
+import { getImageUrl } from "../../helpers/config/envConfig";
 
 const notifications = [
   {
@@ -35,7 +37,11 @@ const notifications = [
 ];
 
 const Topbar = ({ collapsed, setCollapsed }) => {
-  const user = JSON.parse(localStorage.getItem("home_care_user"));
+  const { data, isFetching } = useGetProfileQuery();
+  const imageApiUrl = getImageUrl();
+  const profileData = data?.data;
+  const profileImage = imageApiUrl + profileData?.image;
+
   const [notificationCount, setNotificationCount] = useState(
     notifications.length
   );
@@ -63,7 +69,7 @@ const Topbar = ({ collapsed, setCollapsed }) => {
         </div>
       ))}
       <Link
-        to={`/${user?.role}/notifications`}
+        to={`/admin/notifications`}
         className="w-2/3 mx-auto bg-secondary-color !text-primary-color rounded h-8 py-1"
       >
         See More
@@ -94,16 +100,16 @@ const Topbar = ({ collapsed, setCollapsed }) => {
         <Link to="profile">
           <div className="flex items-center justify-center gap-0 bg-white text-base-color rounded-lg  px-2 py-1  border border-[#8D969B] mr-5">
             <img
-              src={AllImages.user}
+              src={profileImage}
               alt="profile_pic"
               style={{ width: "40px", height: "40px", marginRight: "10px" }}
-              className="rounded-full"
+              className="rounded-full border border-secondary-color"
             />
             <div className="flex flex-col justify-center">
               <p className="text-base-color font-semibold text-sm">
-                David Wilson
+                {profileData?.fullName}
               </p>
-              <p className="text-base-color text-xs">Admin</p>
+              <p className="text-base-color text-xs">{profileData?.role}</p>
             </div>
           </div>
         </Link>

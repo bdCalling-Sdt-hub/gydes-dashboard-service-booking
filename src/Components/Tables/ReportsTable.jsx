@@ -6,32 +6,32 @@ const ReportsTable = ({ reportData, showViewReportModal, setPage }) => {
   const columns = [
     {
       title: "#UID",
-      dataIndex: "UID",
-      key: "UID",
+      render: (_, __, index) => index + 1,
+      key: "_id",
     },
     {
       title: "User Name",
-      dataIndex: "userName",
-      key: "userName",
+      dataIndex: ["reportId", "fullName"],
+      key: "_id",
     },
     {
       title: "User Role",
-      dataIndex: "userRole",
-      key: "userRole",
+      dataIndex: ["reportId", "role"],
+      key: "_id",
     },
     {
       title: "Comments",
-      dataIndex: "reason",
-      key: "reason",
+      dataIndex: "comment",
+      key: "_id",
     },
     {
       title: "Reported By",
-      dataIndex: "reportedBy",
-      key: "reportedBy",
+      dataIndex: ["userId", "fullName"],
+      key: "_id",
     },
     {
       title: "Action",
-      key: "action",
+      key: "_id",
       render: (_, record) => (
         <Tooltip placement="right" title="View Details">
           <Button

@@ -1,26 +1,24 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import SearchInput from "../../ReuseCompo/SearchInput";
-import { Reports } from "../../../../public/data/Reports";
 import ReportsTable from "../../Tables/ReportsTable";
 import ReportModal from "../../Modal/ReportModal";
+import { useGetReportsQuery } from "../../../redux/features/reports/reportsApi";
 
 const AllReports = () => {
-  const allReport = Reports;
-
   const [page, setPage] = useState(1);
   const [searchText, setSearchText] = useState("");
+  const limit = 12;
   const [isReportViewModalVisible, setIsReportViewModalVisible] =
     useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
 
-  console.log(page);
-
-  const filteredData = useMemo(() => {
-    if (!searchText) return allReport;
-    return allReport.filter((item) =>
-      item?.Name?.toLowerCase().includes(searchText.toLowerCase())
-    );
-  }, [searchText, allReport]);
+  const { data, isFetching } = useGetReportsQuery({
+    page,
+    searchTerm: searchText,
+    limit,
+  });
+  const allReport = data?.data;
+  const total = data?.meta?.total;
 
   const showViewReportModal = (record) => {
     setCurrentRecord(record);
@@ -43,13 +41,18 @@ const AllReports = () => {
           placeholder="Search..."
           search={searchText}
           setSearch={setSearchText}
+          setPage={setPage}
         />
       </div>
 
       <ReportsTable
-        reportData={filteredData}
+        reportData={allReport}
         showViewReportModal={showViewReportModal}
         setPage={setPage}
+        loading={isFetching}
+        total={total}
+        limit={limit}
+        page={page}
       />
       <ReportModal
         isReportViewModalVisible={isReportViewModalVisible}

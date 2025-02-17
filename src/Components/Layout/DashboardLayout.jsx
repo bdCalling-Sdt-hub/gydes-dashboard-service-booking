@@ -6,6 +6,7 @@ import users from "/images/dashboard-logo/users.svg";
 import earning from "/images/dashboard-logo/earning.svg";
 import reports from "/images/dashboard-logo/reports.svg";
 import events from "/images/dashboard-logo/events.svg";
+import subscription from "/images/dashboard-logo/subscription.svg";
 
 import setting from "/images/dashboard-logo/setting.svg";
 import profile from "/images/dashboard-logo/profile.svg";
@@ -164,6 +165,22 @@ const DashboardLayout = () => {
         />
       ),
       label: <NavLink to="events">Events</NavLink>,
+    },
+    {
+      key: "subscription",
+      icon: (
+        <img
+          src={subscription}
+          alt="subscription"
+          width={20}
+          style={{
+            filter: location.pathname.includes("subscription")
+              ? "invert(38%) sepia(85%) saturate(5500%) hue-rotate(190deg) brightness(90%) contrast(90%)"
+              : undefined,
+          }}
+        />
+      ),
+      label: <NavLink to="subscription">Subscription</NavLink>,
     },
   ];
 

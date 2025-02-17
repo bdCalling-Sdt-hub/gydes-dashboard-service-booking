@@ -1,23 +1,32 @@
 import { Button, Tooltip } from "antd";
 import { GoEye } from "react-icons/go";
 import MyTable from "../ReuseCompo/MyTable";
+import { formatJoinDate } from "../../utils/dateFormet";
 
-const EventsTable = ({ eventsData, showViewEventModal, setPage }) => {
+const EventsTable = ({
+  loading,
+  eventsData,
+  showViewEventModal,
+  setPage,
+  total,
+  limit,
+  page,
+}) => {
   const columns = [
     {
       title: "Event Name",
-      dataIndex: "eventName",
-      key: "eventName",
+      dataIndex: "title",
+      key: "title",
     },
     {
       title: "Date",
       dataIndex: "date",
-      key: "date",
+      render: (date) => formatJoinDate(date),
     },
     {
       title: "Location",
-      dataIndex: "location",
-      key: "location",
+      dataIndex: "address",
+      key: "address",
     },
     {
       title: "Time",
@@ -26,18 +35,13 @@ const EventsTable = ({ eventsData, showViewEventModal, setPage }) => {
     },
     {
       title: "Host",
-      dataIndex: "host",
+      dataIndex: ["createdBy", "fullName"],
       key: "host",
     },
     {
-      title: "Co-host",
-      dataIndex: "coHost",
-      key: "coHost",
-    },
-    {
       title: "Participants",
-      dataIndex: "participants",
-      key: "participants",
+      dataIndex: "maxParticipants",
+      key: "maxParticipants",
     },
     {
       title: "Action",
@@ -60,7 +64,17 @@ const EventsTable = ({ eventsData, showViewEventModal, setPage }) => {
     },
   ];
 
-  return <MyTable columns={columns} data={eventsData} setPage={setPage} />;
+  return (
+    <MyTable
+      loading={loading}
+      columns={columns}
+      data={eventsData}
+      setPage={setPage}
+      total={total}
+      limit={limit}
+      page={page}
+    />
+  );
 };
 
 export default EventsTable;

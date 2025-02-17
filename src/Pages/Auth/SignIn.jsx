@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button, Checkbox, Form, Input, Typography } from "antd";
 
 import Container from "../../Components/UI/Container";
@@ -12,7 +12,6 @@ import {
 import { useLoginMutation } from "../../redux/features/auth/authApi";
 
 const SignIn = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userLogin] = useLoginMutation();
   const token = Cookies.get("gydes_accessToken");
@@ -50,8 +49,6 @@ const SignIn = () => {
         id: toastId,
         duration: 2000,
       });
-
-      navigate("/");
     } catch (error) {
       toast.error(
         error?.data?.message ||

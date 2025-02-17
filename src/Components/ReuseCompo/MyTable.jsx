@@ -1,18 +1,29 @@
 import { Table } from "antd";
 
-const MyTable = ({ columns, data, setPage }) => {
+const MyTable = ({
+  loading,
+  columns,
+  data,
+  setPage,
+  total,
+  limit,
+  page,
+  onChange,
+}) => {
   return (
     <Table
+      loading={loading}
       columns={columns}
       dataSource={data}
+      onChange={onChange}
       pagination={
-        data?.length > 10
+        total > 0
           ? {
+              current: page,
               onChange: (page) => setPage(page),
-              showSizeChanger: false, // Enables page size selection
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`, // Shows total items
-              total: data.length,
+              showSizeChanger: false,
+              total,
+              pageSize: limit,
             }
           : false
       }

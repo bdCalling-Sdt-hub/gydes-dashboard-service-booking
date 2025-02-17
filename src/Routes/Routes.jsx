@@ -27,6 +27,7 @@ import NotFoundPage from "../Components/NotFound/NotFound";
 import Events from "../Pages/Admin/Events";
 import Cookies from "js-cookie";
 import { decodedToken } from "../utils/jwt";
+import SubscriptionPage from "../Pages/Admin/SubscriptionPage";
 
 function AuthRedirect() {
   const navigate = useNavigate();
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
       {
         path: "events",
         element: <Events />,
+      },
+      {
+        path: "subscription",
+        element: <SubscriptionPage />,
       },
       {
         path: "profile",

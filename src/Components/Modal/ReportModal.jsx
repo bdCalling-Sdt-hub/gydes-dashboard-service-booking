@@ -27,7 +27,7 @@ const ReportModal = ({
             />
           </div>
           <div className="text-lg sm:text-xl lg:text-2xl font-semibold">
-            {currentRecord?.userName}
+            {currentRecord?.reportId?.fullName}
           </div>
           <div className="flex items-center justify-center gap-2">
             <Rate
@@ -43,29 +43,34 @@ const ReportModal = ({
               <div className="flex justify-center items-center gap-2 mb-2">
                 <div className=" font-medium ">Role: </div>
                 <div className="text-secondary-color">
-                  {currentRecord?.userRole}
+                  {currentRecord?.reportId?.role}
                 </div>
               </div>
 
-              <div className="flex justify-center items-center  gap-2 mb-2">
-                <div className=" font-medium ">Email:</div>
-                <div>{currentRecord?.email}</div>
-              </div>
-
-              <div className="flex justify-center items-center  gap-2 mb-2">
-                <div className=" font-medium ">Reason:</div>
-                <div>{currentRecord?.reason}</div>
-              </div>
-
-              <div className="flex justify-center items-center  gap-2 mb-2">
-                <div className=" font-medium ">Report By:</div>
-                <div className="text-justify pt-0 ">
-                  {currentRecord?.reportedBy}
+              <div className=" mb-2">
+                <div>
+                  <span className=" font-medium ">Email: </span>
+                  {currentRecord?.email}
                 </div>
               </div>
-              <div className="flex justify-start items-stretch  gap-2 mb-2">
-                <div className=" font-medium ">Comment:</div>
-                <div className="text-start pt-0 ">{currentRecord?.comment}</div>
+
+              <div className=" mb-2">
+                <div>
+                  <span className=" font-medium ">Reason:</span>{" "}
+                  {currentRecord?.comment}
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <div>
+                  <span className=" font-medium ">Report By:</span>{" "}
+                  {currentRecord?.userId?.fullName}
+                </div>
+              </div>
+              <div className=" mb-2">
+                <div className="text-start pt-0 ">
+                  <span className=" font-medium ">Comment: </span>
+                </div>
               </div>
             </div>
           </div>

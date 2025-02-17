@@ -1,12 +1,13 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { ConfigProvider, Input } from "antd";
 
-const SearchInput = ({ placeholder, setSearch }) => {
+const SearchInput = ({ placeholder, setSearch, setPage }) => {
   const handleSearch = (e) => {
     debounceSearch(e.target.value);
   };
 
   const debounceSearch = debounce((value) => {
+    setPage(1);
     setSearch(value);
   }, 500);
 

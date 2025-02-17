@@ -15,3 +15,5 @@ export const formatDateTime = (date) => {
     return messageDate.format("MMM DD hh:mm A");
   return messageDate.format("DDD MM YYYY hh:mm A");
 };
+
+export const formatJoinDate = (date) => dayjs(date).format(" MMM DD YYYY");
