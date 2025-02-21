@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAddSubscriptionMutation } from "../../../redux/features/subscription/subscriptionApi";
+import { MdDelete } from "react-icons/md";
 
 const AddSubscriptionModal = ({ isModalOpen, setIsModalOpen }) => {
   const [addSubscription] = useAddSubscriptionMutation();
@@ -153,7 +154,7 @@ const AddSubscriptionModal = ({ isModalOpen, setIsModalOpen }) => {
                         className="text-red-500 hover:text-red-700"
                         onClick={() => handleRemoveFeature(index)}
                       >
-                        Remove
+                        <MdDelete className="size-4" />
                       </button>
                     )
                   }

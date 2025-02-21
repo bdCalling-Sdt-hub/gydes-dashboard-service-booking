@@ -9,6 +9,7 @@ import events from "/images/dashboard-logo/events.svg";
 import subscription from "/images/dashboard-logo/subscription.svg";
 
 import setting from "/images/dashboard-logo/setting.svg";
+import faq from "/images/dashboard-logo/faq.svg";
 import profile from "/images/dashboard-logo/profile.svg";
 import privacyPolicy from "/images/dashboard-logo/privacyPolicy.svg";
 import termsOfUse from "/images/dashboard-logo/termsOfUse.svg";
@@ -43,6 +44,9 @@ const DashboardLayout = () => {
   const activeKeys = (() => {
     if (currentPath.includes("/profile")) {
       return ["profile"];
+    }
+    if (currentPath.includes("/faq")) {
+      return ["faq"];
     }
     if (currentPath.includes("/privacy-policy")) {
       return ["privacy-policy"];
@@ -209,6 +213,23 @@ const DashboardLayout = () => {
                   />
                 ),
                 label: <NavLink to="profile">Profile</NavLink>,
+              },
+              {
+                key: "faq",
+                icon: (
+                  <img
+                    src={faq}
+                    alt="faq"
+                    width={16}
+                    height={16}
+                    style={{
+                      filter: location.pathname.includes("faq")
+                        ? "invert(38%) sepia(85%) saturate(5500%) hue-rotate(190deg) brightness(90%) contrast(90%)"
+                        : undefined,
+                    }}
+                  />
+                ),
+                label: <NavLink to="faq">FAQ</NavLink>,
               },
               {
                 key: "privacy-policy",

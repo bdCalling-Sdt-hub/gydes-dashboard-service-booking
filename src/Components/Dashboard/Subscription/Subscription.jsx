@@ -17,8 +17,6 @@ export default function Subscription() {
   const { data, isFetching } = useGetSubscriptionQuery();
   const subscription = data?.data;
 
-  console.log("currentRecord", currentRecord);
-
   const showModal = () => {
     setIsModalOpen(true);
   };

@@ -28,6 +28,7 @@ import Events from "../Pages/Admin/Events";
 import Cookies from "js-cookie";
 import { decodedToken } from "../utils/jwt";
 import SubscriptionPage from "../Pages/Admin/SubscriptionPage";
+import FAQPage from "../Pages/Admin/FAQ";
 
 function AuthRedirect() {
   const navigate = useNavigate();
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
+      },
+      {
+        path: "faq",
+        element: <FAQPage />,
       },
       {
         path: "privacy-policy",

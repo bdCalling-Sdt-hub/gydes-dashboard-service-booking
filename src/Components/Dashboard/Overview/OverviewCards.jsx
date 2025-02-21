@@ -2,28 +2,28 @@ import { FaUserTie } from "react-icons/fa6";
 import { HiUserGroup } from "react-icons/hi2";
 import { RiUserSearchFill } from "react-icons/ri";
 
-const data = [
-  {
-    id: 1,
-    name: "Total Users",
-    icon: <HiUserGroup className="h-10 w-10 text-secondary-color" />,
-    count: 10000,
-  },
-  {
-    id: 2,
-    name: "Seekers",
-    icon: <RiUserSearchFill className="h-10 w-10 text-secondary-color" />,
-    count: 4000,
-  },
-  {
-    id: 3,
-    name: "Guide",
-    icon: <FaUserTie className="h-10 w-10 text-secondary-color" />,
-    count: 6000,
-  },
-];
+const OverviewCard = ({ totalAllUsers }) => {
+  const data = [
+    {
+      id: 1,
+      name: "Total Users",
+      icon: <HiUserGroup className="h-10 w-10 text-secondary-color" />,
+      count: totalAllUsers?.user,
+    },
+    {
+      id: 2,
+      name: "Seekers",
+      icon: <RiUserSearchFill className="h-10 w-10 text-secondary-color" />,
+      count: totalAllUsers?.seeker,
+    },
+    {
+      id: 3,
+      name: "Guide",
+      icon: <FaUserTie className="h-10 w-10 text-secondary-color" />,
+      count: totalAllUsers?.guides,
+    },
+  ];
 
-const OverviewCard = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-1 lg:gap-5 mb-5">
       {/* Company  */}

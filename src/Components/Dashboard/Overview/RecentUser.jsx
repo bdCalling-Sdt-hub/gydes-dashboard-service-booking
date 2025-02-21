@@ -1,11 +1,7 @@
 import { useState } from "react";
 import UserModal from "../../Modal/UserModal";
 import UserTable from "../../Tables/UserTable";
-import { useGetAllUsersQuery } from "../../../redux/features/users/usersApi";
-const RecentUser = () => {
-  const { data, isFetching } = useGetAllUsersQuery({});
-  const recentUserData = data?.data.slice(0, 6);
-
+const RecentUser = ({ recentUsers, isFetching }) => {
   const [isRecentUserViewModalVisible, setIsRecentUserViewModalVisible] =
     useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
@@ -30,7 +26,7 @@ const RecentUser = () => {
 
       <UserTable
         loading={isFetching}
-        userData={recentUserData}
+        userData={recentUsers}
         showViewUserModal={showViewUserModal}
       />
       <UserModal
