@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   role: "",
-  status: "",
-  isSubcription: "",
+  status: null,
+  isSubcription: null,
 };
 
 const usersSlice = createSlice({

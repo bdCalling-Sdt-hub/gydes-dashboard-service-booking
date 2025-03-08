@@ -2,7 +2,15 @@ import { Button, Tooltip } from "antd";
 import { GoEye } from "react-icons/go";
 import MyTable from "../ReuseCompo/MyTable";
 
-const ReportsTable = ({ reportData, showViewReportModal, setPage }) => {
+const ReportsTable = ({
+  reportData,
+  showViewReportModal,
+  setPage,
+  loading,
+  total,
+  limit,
+  page,
+}) => {
   const columns = [
     {
       title: "#UID",
@@ -50,7 +58,17 @@ const ReportsTable = ({ reportData, showViewReportModal, setPage }) => {
     },
   ];
 
-  return <MyTable columns={columns} data={reportData} setPage={setPage} />;
+  return (
+    <MyTable
+      columns={columns}
+      data={reportData}
+      setPage={setPage}
+      loading={loading}
+      total={total}
+      limit={limit}
+      page={page}
+    />
+  );
 };
 
 export default ReportsTable;

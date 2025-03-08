@@ -28,6 +28,7 @@ const RecentUser = ({ recentUsers, isFetching }) => {
         loading={isFetching}
         userData={recentUsers}
         showViewUserModal={showViewUserModal}
+        showFilters={false}
       />
       <UserModal
         isUserViewModalVisible={isRecentUserViewModalVisible}

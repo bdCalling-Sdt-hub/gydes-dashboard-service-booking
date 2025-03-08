@@ -13,20 +13,34 @@ const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
   const profileImage = imageApiUrl + currentRecord?.image;
 
   const handleVerified = async (id) => {
-    const toastId = toast.loading("User verified...");
+    Modal.confirm({
+      title: "Are you sure you want to verify this user?",
+      okText: "Yes, Verify",
+      cancelText: "Cancel",
+      okButtonProps: {
+        style: {
+          backgroundColor: "#0861c5 ",
+          borderColor: "#0861c5 ",
+          color: "white",
+        },
+      },
+      onOk: async () => {
+        const toastId = toast.loading("User verified...");
 
-    try {
-      const res = await verifedUser({ id });
-      console.log(res);
-      toast.success(res?.data?.message, {
-        id: toastId,
-        duration: 2000,
-      });
-      handleCancel();
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to verify user", { id: toastId, duration: 2000 });
-    }
+        try {
+          const res = await verifedUser({ id });
+          console.log(res);
+          toast.success(res?.data?.message, {
+            id: toastId,
+            duration: 2000,
+          });
+          handleCancel();
+        } catch (error) {
+          console.log(error);
+          toast.error("Failed to verify user", { id: toastId, duration: 2000 });
+        }
+      },
+    });
   };
 
   return (

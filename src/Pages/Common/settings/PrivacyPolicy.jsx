@@ -1,14 +1,43 @@
 import { Button } from "antd";
 import JoditEditor from "jodit-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import {
+  useGetPrivacyQuery,
+  useUpdatePrivacyMutation,
+} from "../../../redux/features/privacyPolicy/privacyPolicyApi";
+import Loading from "../../../Components/UI/Loading";
 
 const PrivacyPolicy = () => {
+  const [updatePrivacyPolicy] = useUpdatePrivacyMutation();
   const editor = useRef(null);
   const [content, setContent] = useState("");
 
-  const handleOnSave = () => {
-    console.log(content);
+  const { data, isFetching } = useGetPrivacyQuery();
+
+  useEffect(() => {
+    if (data) {
+      setContent(data?.data?.content);
+    }
+  }, [data]);
+
+  const handleOnSave = async () => {
+    const toastId = toast.loading("Updating privacy policy...");
+
+    try {
+      const res = await updatePrivacyPolicy({ content }).unwrap();
+      toast.success(res?.message, { id: toastId, duration: 2000 });
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to update privacy policy", {
+        id: toastId,
+        duration: 2000,
+      });
+    }
   };
+
+  if (isFetching) {
+    return <Loading />;
+  }
 
   return (
     <div

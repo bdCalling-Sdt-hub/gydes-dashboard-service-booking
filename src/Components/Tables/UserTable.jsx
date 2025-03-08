@@ -16,11 +16,11 @@ const UserTable = ({
   total,
   limit,
   page,
+  showFilters = true,
 }) => {
   const dispatch = useDispatch();
 
   // Check if filters should be displayed based on userData length
-  const showFilters = userData?.length > 6;
 
   const columns = [
     {
@@ -128,7 +128,7 @@ const UserTable = ({
         dispatch(setStatus(false));
       }
     } else {
-      dispatch(setStatus(""));
+      dispatch(setStatus(null));
     }
     if (filters?.isSubcription) {
       if (filters?.isSubcription[0] === "premium") {
@@ -137,7 +137,7 @@ const UserTable = ({
         dispatch(setIsSubcription(false));
       }
     } else {
-      dispatch(setIsSubcription(""));
+      dispatch(setIsSubcription(null));
     }
   };
 
