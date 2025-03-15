@@ -20,7 +20,7 @@ const EditProfile = () => {
   const imageApiUrl = getImageUrl();
   const [form] = Form.useForm();
 
-  const profileData = data?.data;
+  const profileData = data?.data?.result;
   const profileImage = imageApiUrl + profileData?.image;
   const [imageUrl, setImageUrl] = useState(profileImage);
 

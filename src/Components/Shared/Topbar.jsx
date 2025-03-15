@@ -39,7 +39,7 @@ const notifications = [
 const Topbar = ({ collapsed, setCollapsed }) => {
   const { data, isFetching } = useGetProfileQuery();
   const imageApiUrl = getImageUrl();
-  const profileData = data?.data;
+  const profileData = data?.data?.result;
   const profileImage = imageApiUrl + profileData?.image;
 
   const [notificationCount, setNotificationCount] = useState(
@@ -103,7 +103,7 @@ const Topbar = ({ collapsed, setCollapsed }) => {
               src={profileImage}
               alt="profile_pic"
               style={{ width: "40px", height: "40px", marginRight: "10px" }}
-              className="rounded-full border border-secondary-color"
+              className="rounded-full border border-secondary-color object-cover"
             />
             <div className="flex flex-col justify-center">
               <p className="text-base-color font-semibold text-sm">
