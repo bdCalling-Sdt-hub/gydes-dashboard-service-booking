@@ -1,14 +1,50 @@
 import { Button } from "antd";
 import JoditEditor from "jodit-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  useGetTermsAndConditionsQuery,
+  useUpdatePrivacyMutation,
+} from "../../../redux/features/privacyPolicy/privacyPolicyApi";
+import { toast } from "sonner";
+import Loading from "../../../Components/UI/Loading";
 
 const TermsOfService = () => {
+  const [updatePrivacyPolicy] = useUpdatePrivacyMutation();
   const editor = useRef(null);
   const [content, setContent] = useState("");
 
-  const handleOnSave = () => {
-    console.log("Saved PP");
+  const { data, isFetching } = useGetTermsAndConditionsQuery();
+
+  useEffect(() => {
+    if (data) {
+      setContent(data?.data?.content);
+    }
+  }, [data]);
+
+  const handleOnSave = async () => {
+    const toastId = toast.loading("Updating Terms and Conditions...");
+
+    const data = {
+      key: "term_condition",
+      content: content,
+    };
+    try {
+      const res = await updatePrivacyPolicy(data).unwrap();
+      toast.success(res?.message, { id: toastId, duration: 2000 });
+    } catch (error) {
+      toast.error(
+        error?.data?.message || "Failed to update Terms and Conditions",
+        {
+          id: toastId,
+          duration: 2000,
+        }
+      );
+    }
   };
+
+  if (isFetching) {
+    return <Loading />;
+  }
 
   return (
     <div

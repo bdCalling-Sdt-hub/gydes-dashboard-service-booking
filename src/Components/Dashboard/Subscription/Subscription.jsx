@@ -63,7 +63,7 @@ export default function Subscription() {
         </div>
         <div className="flex flex-wrap flex-col md:flex-row justify-center items-center md:items-stretch  gap-20">
           {isFetching ? (
-            <div>
+            <div className="flex items-center justify-center min-h-[70vh]">
               <Loading />
             </div>
           ) : (

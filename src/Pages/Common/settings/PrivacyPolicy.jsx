@@ -24,8 +24,12 @@ const PrivacyPolicy = () => {
   const handleOnSave = async () => {
     const toastId = toast.loading("Updating privacy policy...");
 
+    const data = {
+      key: "privacy_policy",
+      content: content,
+    };
     try {
-      const res = await updatePrivacyPolicy({ content }).unwrap();
+      const res = await updatePrivacyPolicy(data).unwrap();
       toast.success(res?.message, { id: toastId, duration: 2000 });
     } catch (error) {
       toast.error(error?.data?.message || "Failed to update privacy policy", {
@@ -36,7 +40,11 @@ const PrivacyPolicy = () => {
   };
 
   if (isFetching) {
-    return <Loading />;
+    return (
+      <div className="flex items-center justify-center min-h-[70vh]">
+        <Loading />
+      </div>
+    );
   }
 
   return (

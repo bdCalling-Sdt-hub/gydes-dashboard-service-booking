@@ -65,7 +65,7 @@ const FAQSection = () => {
 
           <div>
             {isFetching ? (
-              <div>
+              <div className="flex items-center justify-center min-h-[70vh]">
                 <Loading />
               </div>
             ) : (
