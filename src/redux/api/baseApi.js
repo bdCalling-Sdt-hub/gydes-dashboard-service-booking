@@ -4,6 +4,7 @@ import { tagTypesList } from "../tagTypes";
 import { getBaseUrl } from "../../helpers/config/envConfig";
 import { getFromLocalStorage } from "../../utils/localStorage";
 import Cookies from "js-cookie";
+import { clearAuth } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: getBaseUrl(),
@@ -34,38 +35,26 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// const baseQueryWithRefreshToken = async (args, api, extraOptions) => {
-//   let result = await baseQuery(args, api, extraOptions);
+const baseQueryWithAuthCheck = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
 
-//   if (result?.error?.status === 401) {
-//     const res = await fetch(`${getBaseUrl()}/auth/refresh-token`, {
-//       method: "POST",
-//       credentials: "include",
-//     });
+  if (result?.error) {
+    const { status, data } = result.error;
 
-//     const data = await res.json();
-//     if (data?.data?.accessToken) {
-//       const user = api.getState().auth.user;
+    if (status === 401 || status === 500) {
+      // Dispatch logout action
+      Cookies.remove("gydes_accessToken");
+      api.dispatch(clearAuth());
+      window.location.reload();
+    }
+  }
 
-//       api.dispatch(
-//         setUser({
-//           user,
-//           token: data.data.accessToken,
-//         })
-//       );
-
-//       result = await baseQuery(args, api, extraOptions);
-//     } else {
-//       // api.dispatch(logout());
-//     }
-//   }
-
-//   return result;
-// };
+  return result;
+};
 
 export const baseApi = createApi({
   reducerPath: "api",
-  baseQuery: baseQuery,
+  baseQuery: baseQueryWithAuthCheck,
   endpoints: () => ({}),
   tagTypes: tagTypesList,
 });

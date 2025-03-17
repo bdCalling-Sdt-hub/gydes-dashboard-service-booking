@@ -5,13 +5,18 @@ import { decodedToken } from "../utils/jwt";
 
 function ProtectedRoute({ children, role }) {
   const token = Cookies.get("gydes_accessToken");
-  const user = decodedToken(token);
 
-  if (!user || user?.role !== role) {
+  if (token) {
+    const user = decodedToken(token);
+
+    if (!user || user?.role !== role) {
+      return <Navigate to="/signin" replace />;
+    }
+
+    return <>{children}</>;
+  } else {
     return <Navigate to="/signin" replace />;
   }
-
-  return <>{children}</>;
 }
 
 export default ProtectedRoute;

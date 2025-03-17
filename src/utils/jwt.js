@@ -1,9 +1,12 @@
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 export const decodedToken = (token) => {
-  if (token) {
+  try {
     return jwtDecode(token);
-  } else {
-    return null;
+  } catch (error) {
+    Cookies.remove("gydes_accessToken");
+    localStorage.removeItem("persist:gydes");
+    return null; // Return null instead of crashing the app
   }
 };

@@ -36,10 +36,14 @@ function AuthRedirect() {
 
   useEffect(() => {
     const token = Cookies.get("gydes_accessToken");
-    const user = decodedToken(token);
-    console.log("User:", user);
-    if (user || user?.role === "admin") {
-      navigate(`/${user.role}/dashboard`, { replace: true });
+
+    if (token) {
+      const user = decodedToken(token);
+      if (user || user?.role === "admin") {
+        navigate(`/${user.role}/dashboard`, { replace: true });
+      } else {
+        navigate("/signin", { replace: true });
+      }
     } else {
       navigate("/signin", { replace: true });
     }
