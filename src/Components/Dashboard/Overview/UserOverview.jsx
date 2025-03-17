@@ -1,10 +1,14 @@
 import Area_Chart from "../../Chart/AreaChart";
 import YearOption from "../../../utils/YearOption";
 import { useState } from "react";
+import { useGetUserYearStateQuery } from "../../../redux/features/overview/overviewApi";
 
 const UserOverview = () => {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
+  const { data, isFetching } = useGetUserYearStateQuery({ year });
+  console.log(data);
+  const userOverview = data?.data?.userOverview;
 
   console.log(year);
   return (
@@ -19,7 +23,7 @@ const UserOverview = () => {
         </div>
       </div>
       <div>
-        <Area_Chart />
+        <Area_Chart userOverview={userOverview} isFetching={isFetching} />
       </div>
     </div>
   );

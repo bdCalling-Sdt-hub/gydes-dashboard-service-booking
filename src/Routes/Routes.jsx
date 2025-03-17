@@ -29,6 +29,7 @@ import Cookies from "js-cookie";
 import { decodedToken } from "../utils/jwt";
 import SubscriptionPage from "../Pages/Admin/SubscriptionPage";
 import FAQPage from "../Pages/Admin/FAQ";
+import WithdrawSection from "../Components/Dashboard/Withdraw/WithdrawSection";
 
 function AuthRedirect() {
   const navigate = useNavigate();
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: "events",
         element: <Events />,
+      },
+      {
+        path: "withdraw",
+        element: <WithdrawSection />,
       },
       {
         path: "subscription",

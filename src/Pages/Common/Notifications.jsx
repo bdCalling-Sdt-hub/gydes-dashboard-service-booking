@@ -3,6 +3,9 @@ import React from "react";
 import { FiBell } from "react-icons/fi";
 import { MdArrowBackIos } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useGetNotificationQuery } from "../../redux/features/overview/overviewApi";
+import dayjs from "dayjs";
+import { formatDateTime } from "../../utils/dateFormet";
 
 const notifications = [
   { id: 1, message: "A company added 6 Service Users.", time: "Fri, 12:30pm" },
@@ -28,9 +31,11 @@ const notifications = [
 ];
 
 const Notifications = () => {
+  const { data: notificationData } = useGetNotificationQuery();
+  console.log(notificationData);
   return (
     <div
-      className=" bg-slate-50  rounded-xl"
+      className=" bg-slate-50 min-h-[89vh]  rounded-xl"
       style={{ boxShadow: "0px 0px 5px  rgba(0, 0, 0, 0.25)" }}
     >
       <div className="flex items-center bg-secondary-color gap-1 py-3 px-5 mb-3 rounded-tl-xl rounded-tr-xl">
@@ -42,7 +47,7 @@ const Notifications = () => {
         <h1 className="text-3xl font-bold text-primary-color">Notification</h1>
       </div>
       <div className="px-4 sm:px-6 md:px-8 ">
-        {notifications.map((notification) => (
+        {notificationData?.data?.map((notification) => (
           <div
             key={notification.id}
             className="flex items-center space-x-3 p-2 border-b border-gray-300 last:border-none"
@@ -55,9 +60,11 @@ const Notifications = () => {
             {/* Notification text */}
             <div className="flex flex-col">
               <span className="text-lg font-medium text-gray-700">
-                {notification.message}
+                {notification.title}
               </span>
-              <span className="text-sm text-gray-500">{notification.time}</span>
+              <span className="text-sm text-gray-500">
+                {formatDateTime(notification?.created_at)}
+              </span>
             </div>
           </div>
         ))}

@@ -1,47 +1,88 @@
 import { Button, Tooltip } from "antd";
 import { GoEye } from "react-icons/go";
 import MyTable from "../ReuseCompo/MyTable";
+import { useDispatch } from "react-redux";
+import {
+  setPayment,
+  setPaymentType,
+} from "../../redux/features/payment/paymentSlice";
 
-const EarningTable = ({ earningData, showViewEarningModal, setPage }) => {
+const EarningTable = ({
+  transactionsData,
+  loading,
+  showViewEarningModal,
+  setPage,
+  total,
+  limit,
+  page,
+}) => {
+  const dispatch = useDispatch();
   const columns = [
     {
       title: "UID",
-      dataIndex: "UID",
+      dataIndex: "_id",
+      render: (_, __, index) => index + 1,
       key: "UID",
     },
     {
-      title: "User Name",
-      dataIndex: "userName",
-      key: "userName",
+      title: "Seeker",
+      dataIndex: ["user_id", "fullName"],
+      key: "seekerName",
     },
     {
-      title: "Premium Plan",
-      dataIndex: "premiumPlan",
-      key: "premiumPlan",
+      title: "Guide",
+      dataIndex: ["guide_id", "fullName"],
+      key: "guideName",
     },
     {
-      title: "Amount ($)",
+      title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      sorter: (a, b) => a.amount - b.amount, // Sorting by amount
-      render: (text) => `$${text}`, // Optional: display amount with "$" symbol
+      sorter: true,
+      render: (text) => `$${text}`,
     },
     {
-      title: "Purchase Date",
-      dataIndex: "purchaseDate",
-      key: "purchaseDate",
-      sorter: (a, b) => new Date(a.purchaseDate) - new Date(b.purchaseDate), // Sorting by purchase date
-      render: (text) => new Date(text).toLocaleDateString(), // Optional: format the date for display
+      title: "Guide Earning ($)",
+      dataIndex: "netAmount",
+      key: "netAmount",
+      render: (text, record) => (record?.user_id ? `$${text}` : `-`),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+      title: "Admin Earning ($)",
+      dataIndex: "commission",
+      key: "commission",
+      // Sorting by amount
+      render: (text, record) =>
+        record?.paymentStatus !== "refunded" && `$${text}`,
+    },
+    {
+      title: "Payment Type",
+      dataIndex: "paymentType",
+      key: "paymentType", //subscription
       filters: [
-        { text: "Active", value: "Active" },
-        { text: "Refunded", value: "Refunded" },
+        {
+          text: "Commission",
+          value: "booking",
+        },
+        {
+          text: "Premium Service",
+          value: "subscription",
+        },
       ],
-      onFilter: (value, record) => record.status.indexOf(value) === 0,
+      filterMultiple: false,
+      render: (text) =>
+        `${text === "booking" ? "Commission" : "Premium Service"}`,
+    },
+    {
+      title: "Payment Status",
+      dataIndex: "paymentStatus",
+      key: "paymentStatus",
+      render: (text) =>
+        text === "refunded" ? (
+          <span className="text-red-500">Refunded</span>
+        ) : (
+          <span className="text-green-500">{text}</span>
+        ),
     },
     {
       title: "Action",
@@ -64,7 +105,36 @@ const EarningTable = ({ earningData, showViewEarningModal, setPage }) => {
     },
   ];
 
-  return <MyTable columns={columns} data={earningData} setPage={setPage} />;
+  const handleTableChange = (pagination, filters, sorter) => {
+    // Accessing the sort field and order (asc or desc)
+    if (sorter.field === "amount") {
+      sorter.order === "ascend"
+        ? dispatch(setPayment("asc"))
+        : sorter.order === "descend"
+        ? dispatch(setPayment("desc"))
+        : dispatch(setPayment(""));
+    }
+    if (filters?.paymentType) {
+      const data = filters?.paymentType[0];
+      dispatch(setPaymentType(data || ""));
+    } else {
+      dispatch(setPaymentType(""));
+    }
+  };
+
+  return (
+    <MyTable
+      loading={loading}
+      columns={columns}
+      data={transactionsData}
+      setPage={setPage}
+      total={total}
+      limit={limit}
+      page={page}
+      keyData="_id"
+      onChange={handleTableChange}
+    />
+  );
 };
 
 export default EarningTable;

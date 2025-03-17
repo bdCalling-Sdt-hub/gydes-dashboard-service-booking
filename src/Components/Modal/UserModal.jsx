@@ -3,11 +3,17 @@ import { Button, Modal, Rate } from "antd";
 import { getImageUrl } from "../../helpers/config/envConfig";
 import { formatJoinDate } from "../../utils/dateFormet";
 import { toast } from "sonner";
-import { useVerifedUserMutation } from "../../redux/features/users/usersApi";
+import {
+  useBlockUserMutation,
+  useUnBlockUserMutation,
+  useVerifedUserMutation,
+} from "../../redux/features/users/usersApi";
 import { Link } from "react-router-dom";
 
 const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
   const [verifedUser] = useVerifedUserMutation();
+  const [banUser] = useBlockUserMutation();
+  const [unBlockUser] = useUnBlockUserMutation();
   const imageApiUrl = getImageUrl();
 
   const profileImage = imageApiUrl + currentRecord?.image;
@@ -38,6 +44,63 @@ const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
         } catch (error) {
           console.log(error);
           toast.error("Failed to verify user", { id: toastId, duration: 2000 });
+        }
+      },
+    });
+  };
+
+  const handleBan = async () => {
+    Modal.confirm({
+      title: "Are you sure you want to ban this user?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Ban",
+      cancelText: "Cancel",
+      okButtonProps: {
+        style: {
+          backgroundColor: "#fc2e1c",
+          borderColor: "#fc2e1c",
+          color: "white",
+        },
+      },
+      onOk: async () => {
+        const toastId = toast.loading("Banning user...");
+        try {
+          const res = await banUser({ id: currentRecord?._id }).unwrap();
+          toast.success(res?.message, { id: toastId, duration: 2000 });
+          handleCancel();
+        } catch (error) {
+          toast.error(
+            error?.data?.message || error?.message || "Failed to ban user",
+            { id: toastId, duration: 2000 }
+          );
+        }
+      },
+    });
+  };
+  const handleUnBlock = async () => {
+    Modal.confirm({
+      title: "Are you sure you want to unblock this user?",
+      content: "This action cannot be undone.",
+      okText: "Yes, unblock",
+      cancelText: "Cancel",
+      okButtonProps: {
+        style: {
+          backgroundColor: "#3b3b3b",
+          borderColor: "#3b3b3b",
+          color: "white",
+        },
+      },
+      onOk: async () => {
+        const toastId = toast.loading("Unblocking user...");
+        try {
+          const res = await unBlockUser({ id: currentRecord?._id }).unwrap();
+          toast.success(res?.message, { id: toastId, duration: 2000 });
+          handleCancel();
+        } catch (error) {
+          toast.error(
+            error?.data?.message || error?.message || "Failed to ban user",
+            { id: toastId, duration: 2000 }
+          );
         }
       },
     });
@@ -114,6 +177,21 @@ const UserModal = ({ isUserViewModalVisible, handleCancel, currentRecord }) => {
           </div>
           <div className="mt-5">
             <div className="flex flex-col md:flex-row justify-center items-center gap-3">
+              {!currentRecord?.isBlocked ? (
+                <Button
+                  onClick={handleBan}
+                  className="!bg-[#fc2e1c] !border-none !text-primary-color text-lg font-medium py-5"
+                >
+                  Ban User
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleUnBlock}
+                  className="!bg-[#3b3b3b] !border-none !text-primary-color text-lg font-medium py-5"
+                >
+                  Unban User
+                </Button>
+              )}
               {!currentRecord?.adminVerified && (
                 <Button
                   onClick={() => handleVerified(currentRecord?._id)}

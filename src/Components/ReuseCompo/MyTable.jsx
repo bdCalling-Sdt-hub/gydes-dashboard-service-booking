@@ -9,6 +9,7 @@ const MyTable = ({
   limit,
   page,
   onChange,
+  keyData,
 }) => {
   return (
     <Table
@@ -28,6 +29,7 @@ const MyTable = ({
           : false
       }
       scroll={{ x: true }}
+      rowKey={keyData}
     />
   );
 };

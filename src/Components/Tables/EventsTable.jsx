@@ -39,6 +39,15 @@ const EventsTable = ({
       key: "host",
     },
     {
+      title: "coHost",
+      dataIndex: "coHosts",
+      key: "host",
+      render: (coHosts) =>
+        coHosts?.map((coHost, index) => (
+          <div key={index}>{coHost?.name}</div> // ✅ Add key & return JSX
+        )),
+    },
+    {
       title: "Participants",
       dataIndex: "maxParticipants",
       key: "maxParticipants",

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import YearOption from "../../../utils/YearOption";
 import Bar_Chart from "../../Chart/BarChart";
+import { usePaymentOverviewQuery } from "../../../redux/features/payment/paymentApi";
 
 const IncomeOverview = () => {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear);
+  const { data: paymentOverview, isFetching } = usePaymentOverviewQuery({
+    year,
+  });
 
   console.log(year);
   return (
@@ -19,8 +23,8 @@ const IncomeOverview = () => {
         </div>
       </div>
       <hr />
-      <div>
-        <Bar_Chart />
+      <div className="">
+        <Bar_Chart paymentOverview={paymentOverview} isFetching={isFetching} />
       </div>
     </div>
   );
