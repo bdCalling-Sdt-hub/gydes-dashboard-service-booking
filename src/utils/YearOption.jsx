@@ -5,7 +5,7 @@ const YearOption = ({ currentYear, setThisYear }) => {
   const [yearOptions, setYearOptions] = useState([]);
 
   useEffect(() => {
-    const startYear = 2020;
+    const startYear = 2025;
     const yearRange = [];
 
     // Add the next 3 years to the list
