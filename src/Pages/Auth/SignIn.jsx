@@ -41,9 +41,9 @@ const SignIn = () => {
       dispatch(setUserInfo(res?.data?.attributes));
       Cookies.set("gydes_accessToken", res?.data?.accessToken, {
         path: "/",
-        remote: true,
+        // remote: true,
         expires: 365,
-        secure: true,
+        secure: false,
       });
       toast.success(res.message, {
         id: toastId,
