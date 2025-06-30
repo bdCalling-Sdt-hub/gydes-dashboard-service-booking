@@ -138,7 +138,7 @@ const ReportModal = ({
               <div className=" mb-2">
                 <div className="text-start">
                   <span className=" font-medium ">Email: </span>
-                  {currentRecord?.email}
+                  {currentRecord?.reportId?.email}
                 </div>
               </div>
 
